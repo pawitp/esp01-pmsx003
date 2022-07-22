@@ -1,21 +1,26 @@
-// Save in 6 seconds increments up to 1 day
+// Save in 6 seconds increments up to 4 hours
 #define HISTORY_INCREMENT_SEC 6
-#define HISTORY_SIZE ((60 / HISTORY_INCREMENT_SEC) * 60 * 24)
+#define HISTORY_SIZE ((60 / HISTORY_INCREMENT_SEC) * 60 * 4)
 
-unsigned char history[10 * 60 * 24];
+unsigned char historyAqi[HISTORY_SIZE];
+short historyTemperature[HISTORY_SIZE];
+short historyHumidity[HISTORY_SIZE];
 
 void historyInit() {
   for (int i = 0; i < HISTORY_SIZE; i++) {
-    history[i] = -1;
+    historyAqi[i] = -1;
   }
 }
 
-void historySave(int pm25) {
+void historySave(int pm25, int temperature, int humidity) {
   unsigned char bytePm25 = 254; // Max is 254 since 255 (-1) is used as no data
   if (pm25 < 254) {
     bytePm25 = (unsigned char) pm25;
   }
-  history[historySlot()] = bytePm25;
+  int slot = historySlot();
+  historyAqi[slot] = bytePm25;
+  historyTemperature[slot] = temperature;
+  historyHumidity[slot] = humidity;
 }
 
 int historySlot() {

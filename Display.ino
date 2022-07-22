@@ -4,6 +4,7 @@
 #define OVERLAY_DURATION 5000
 
 long overlayExpire = 0;
+boolean beep = false;
 
 SSD1306Wire display(0x3c, 0, 2);
 
@@ -32,17 +33,32 @@ void displayTextOverlay(String txt) {
   display.display();
 }
 
-void displayAqi(int pm25, int aqi25) {
+void displayAqi(int pm25, int aqi25, int rawTemperature, int rawHumidity) {
   if (millis() < overlayExpire) return;
 
+  beep = !beep;
+
   display.clear();
-  display.setFont(ArialMT_Plain_24);
+  display.setFont(ArialMT_Plain_10);
   display.setTextAlignment(TEXT_ALIGN_LEFT);
-  display.drawString(0, 0, "PM2.5");
-  display.drawString(0, 32, "AQI");
+  display.drawString(0, 3, "PM");
+  display.drawString(0, 13, "2.5");
+  display.drawString(0, 40, "AQI");
+
   display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  display.drawString(128, 0, String(pm25));
-  display.drawString(128, 32, String(aqi25));
+  display.drawString(128, 10, "C");
+  display.drawString(128, 42, "%");
+
+  display.setFont(ArialMT_Plain_24);
+  display.drawString(60, 0, String(pm25));
+  display.drawString(60, 32, String(aqi25));
+  display.drawString(120, 0, String(rawTemperature / 10.0F, 1));
+  display.drawString(120, 32, String(rawHumidity / 10.0F, 1));
+
+  if (beep) {
+    display.drawLine(64 - 4, 63, 64 + 4, 63);
+  }
+
   display.display();
 }
 

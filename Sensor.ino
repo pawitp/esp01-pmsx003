@@ -5,6 +5,8 @@ byte checkHigh = 0;
 int check = 0;
 int pos = 0;
 int pm25 = 0;
+int temperature = 0;
+int humidity = 0;
 
 void sensorLoop() {
   while (Serial.available()) {
@@ -17,6 +19,8 @@ void sensorLoop() {
         pos = 1;
         check = data;
         pm25 = 0;
+        temperature = 0;
+        humidity = 0;
       }
     } else if (pos == 1) {
       if (data == 77) {
@@ -36,6 +40,22 @@ void sensorLoop() {
       pm25 += data;
       pos++;
       check += data;
+    } else if (pos == 24) {
+      temperature += data * 256;
+      pos++;
+      check += data;
+    } else if (pos == 25) {
+      temperature += data;
+      pos++;
+      check += data;
+    } else if (pos == 26) {
+      humidity += data * 256;
+      pos++;
+      check += data;
+    } else if (pos == 27) {
+      humidity += data;
+      pos++;
+      check += data;
     } else if (pos == BUFFER_LEN - 2) {
       checkHigh = data;
       pos++;
@@ -45,7 +65,7 @@ void sensorLoop() {
       pos = 0;
 
       if (checkHigh == expCheckHigh && data == expCheckLow) {
-        onSensorRead(pm25);
+        onSensorRead(pm25, temperature, humidity);
       } else {
         Serial.printf("Checksum Error\n%d %d %d %d\n", checkHigh, data, expCheckHigh, expCheckLow);
         onSensorError("Checksum Error");

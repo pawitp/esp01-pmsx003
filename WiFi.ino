@@ -33,12 +33,16 @@ void wifiInit() {
     int currentSlot = historySlot();
     for (int i = 0; i <= currentSlot; i++) {
       // No data for current slot yet
-      if (i == currentSlot && history[i] == 255) continue;
+      if (i == currentSlot && historyAqi[i] == 255) continue;
 
       int timeForSlot = timeDiff + i * HISTORY_INCREMENT_SEC;
       String line = String(timeForSlot);
       line += ",";
-      line += history[i];
+      line += historyAqi[i];
+      line += ",";
+      line += historyTemperature[i];
+      line += ",";
+      line += historyHumidity[i];
       line += "\n";
       server.sendContent(line);
     }
@@ -49,6 +53,11 @@ void wifiInit() {
   // Wi-Fi setup
   server.on("/wifi", HTTP_GET, []() {
     server.send(200, "text/html", serverWifi);
+  });
+  server.on("/wifioff", HTTP_GET, []() {
+  WiFi.mode(WIFI_OFF);
+  WiFi.forceSleepBegin();
+    server.send(200, "text/html", "OK");
   });
   server.on("/softap", HTTP_GET, []() {
     server.send(200, "text/html", serverSoftAp);

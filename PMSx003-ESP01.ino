@@ -38,15 +38,15 @@ void onSensorError(String error) {
   lastUpdate = millis();
 }
 
-void onSensorRead(int pm25) {
+void onSensorRead(int pm25, int temperature, int humidity) {
   int aqi25 = calculateAqi(pm25);
 
   Serial.println("AQI");
   Serial.println(pm25);
   Serial.println(aqi25);
 
-  displayAqi(pm25, aqi25);
-  historySave(pm25);
+  displayAqi(pm25, aqi25, temperature, humidity);
+  historySave(pm25, temperature, humidity);
   lastUpdate = millis();
 }
 
